@@ -38,9 +38,11 @@
    (with-setf* ((aref a 0) 10
                 (foo :plinge) :narf)
      (print \"blarr\"))"
-  (let* ((pairs-grouped (group place-value-pairs 2))
-         (places (mapcar #'first pairs-grouped))
-         (values (mapcar #'second pairs-grouped)))
+  (destructuring-bind (places values)
+      (loop :for x :in place-value-pairs :for i :from 0
+         :if (evenp i) :collect x :into places
+         :else :collect x :into vals
+         :finally (return (list places vals)))
     (multiple-value-bind (lets setters restores)
         (with-setf-internals env places values)
       `(let* (,@lets)
